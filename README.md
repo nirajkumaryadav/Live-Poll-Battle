@@ -45,24 +45,31 @@ live-poll-battle
    ```
 ### 2.Client
 1. Navigate to the `client` directory.
+   ```
    cd client
+   ```
 2. Install dependencies:
    ```
    npm install
    ```
 ### 3.Server
 1. Navigate to the `server` directory.
+   ```
    cd server
+   ```
 2. Install dependencies:
    ```
    npm install
    ```
 ### 4.Start the application
 1. Return to root directory
+   ```
    cd ..
-
+   ```
 2. Start both client and server
-npm start
+   ```
+   npm start
+   ```
 
 ## How It Works
 
