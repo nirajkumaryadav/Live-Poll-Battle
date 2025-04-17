@@ -1,0 +1,41 @@
+.timer {
+  text-align: center;
+  margin: 25px 0;
+}
+
+.timer h2 {
+  color: var(--highlight);
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  animation: pulse 2s infinite;
+  text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+  }
+  50% {
+    opacity: 0.8;
+    text-shadow: 0 0 20px rgba(99, 102, 241, 0.8);
+  }
+  100% {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+  }
+}
+
+.timer-progress-bar {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  height: 10px;
+  margin: 10px 0;
+}
+
+.timer-progress {
+  height: 100%;
+  transition: width 1s linear, background-color 1s;
+}

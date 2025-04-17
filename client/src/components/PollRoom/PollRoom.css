@@ -1,0 +1,208 @@
+.poll-room {
+  background-color: var(--darker-bg);
+  padding: 30px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  margin: 20px auto;
+  max-width: 800px;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.options-container {
+  margin: 25px 0;
+}
+
+.poll-option {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.poll-option button {
+  flex: 1;
+  padding: 18px;
+  border-radius: var(--border-radius);
+  background-color: var(--accent-bg);
+  color: var(--text-color);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: var(--button-shadow);
+}
+
+.poll-option button:hover:not(:disabled) {
+  background-color: rgba(56, 189, 248, 0.15);
+  border: 1px solid var(--accent-color);
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+}
+
+.poll-option button:disabled {
+  background-color: var(--neutral);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.poll-option button.selected {
+  background-color: rgba(16, 185, 129, 0.15);
+  border: 1px solid var(--success);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+}
+
+.vote-count {
+  margin-left: 20px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  min-width: 80px;
+  text-align: right;
+  color: var(--accent-color);
+}
+
+/* Voted message */
+.voted-message {
+  padding: 20px;
+  background-color: rgba(16, 185, 129, 0.08);
+  color: var(--success);
+  border-radius: var(--border-radius);
+  font-weight: bold;
+  text-align: center;
+  margin: 25px 0;
+  border-left: 4px solid var(--success);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+}
+
+/* Voting ended styles */
+.voting-ended {
+  margin: 25px 0;
+  padding: 25px;
+  background-color: rgba(239, 68, 68, 0.08);
+  border-radius: var(--border-radius);
+  text-align: center;
+  border-left: 4px solid var(--error);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
+}
+
+.voting-ended p {
+  margin: 10px 0;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: var(--error);
+}
+
+.winner {
+  color: var(--success);
+  font-size: 1.8rem;
+  margin-top: 20px;
+  text-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+  font-weight: 700;
+}
+
+.tie {
+  color: var(--warning);
+  font-size: 1.8rem;
+  margin-top: 20px;
+  text-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+  font-weight: 700;
+}
+
+/* Results section */
+.results-section {
+  margin-top: 35px;
+  padding: 25px;
+  background-color: var(--accent-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.results-section h3 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: var(--accent-color);
+  font-size: 1.6rem;
+  letter-spacing: 1px;
+}
+
+/* Action buttons section */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 35px 0 20px;
+  flex-wrap: wrap;
+}
+
+.action-buttons button {
+  min-width: 150px;
+  padding: 14px 30px;
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: var(--button-shadow);
+}
+
+.exit-button {
+  background: linear-gradient(135deg, var(--error), #b91c1c);
+  color: white;
+}
+
+.exit-button:hover {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+.new-poll-button {
+  background: linear-gradient(135deg, var(--accent-color), var(--highlight));
+  color: white;
+}
+
+.new-poll-button:hover {
+  background: linear-gradient(135deg, var(--accent-color-dark), var(--highlight-dark));
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+}
+
+/* Error container for room errors */
+.error-container {
+  padding: 30px;
+  margin: 25px auto;
+  max-width: 600px;
+  background-color: rgba(239, 68, 68, 0.08);
+  border-radius: var(--border-radius);
+  text-align: center;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--error);
+}
+
+.error-container h3 {
+  color: var(--error);
+  font-size: 1.5rem;
+}
+
+.error-message {
+  font-size: 1.1rem;
+  margin: 20px 0;
+  line-height: 1.6;
+}
+
+@media screen and (max-width: 700px) {
+  .poll-option {
+    flex-direction: column;
+  }
+  
+  .poll-option button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .vote-count {
+    text-align: center;
+    margin-left: 0;
+  }
+}

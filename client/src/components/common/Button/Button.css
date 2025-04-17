@@ -1,0 +1,33 @@
+.button-loading {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.5);
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: var(--button-shadow), var(--neon-glow);
+  }
+  50% {
+    box-shadow: var(--button-shadow), 0 0 15px rgba(99, 102, 241, 0.7);
+  }
+  100% {
+    box-shadow: var(--button-shadow), var(--neon-glow);
+  }
+}
+
+button:not(:disabled):hover {
+  animation: pulse-glow 1.5s infinite;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, var(--neutral), var(--neutral));
+  transform: none !important;
+  box-shadow: none;
+}

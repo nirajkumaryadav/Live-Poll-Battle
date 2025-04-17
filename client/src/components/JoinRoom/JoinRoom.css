@@ -1,0 +1,95 @@
+.join-room {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: var(--darker-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.join-room h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  background: linear-gradient(90deg, var(--accent-color), var(--highlight));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1px;
+  font-size: 1.8rem;
+}
+
+.join-room form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.available-rooms {
+  margin-top: 30px;
+  background-color: var(--accent-bg);
+  padding: 20px;
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.room-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.room-header h3 {
+  margin: 0;
+  margin-right: 15px;
+}
+
+.refresh-button {
+  padding: 5px 10px;
+  background: linear-gradient(135deg, var(--accent-color), var(--highlight));
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.refresh-button:hover {
+  background: linear-gradient(135deg, var(--accent-color-dark), var(--highlight-dark));
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.room-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.room-button {
+  padding: 8px 12px;
+  background-color: var(--accent-bg);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.room-button:hover {
+  background-color: rgba(56, 189, 248, 0.2);
+  transform: translateY(-2px);
+  border-color: var(--accent-color);
+}
+
+.room-button.selected {
+  background-color: rgba(16, 185, 129, 0.2);
+  border-color: var(--success);
+}
