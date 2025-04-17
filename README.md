@@ -1,5 +1,8 @@
 # Live Poll Battle
 
+## Live Demo
+**Check out the live application here: [https://live-poll-battle.onrender.com/](https://live-poll-battle.onrender.com/)**
+
 ## Overview
 Live Poll Battle is a real-time polling application that allows users to create or join a poll room and vote on one of two options. The results update instantly across all users in the same room, providing an engaging and interactive experience.
 
