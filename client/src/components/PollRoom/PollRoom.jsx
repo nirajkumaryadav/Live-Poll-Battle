@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useUser } from '../../contexts/UserContext';
 import useWebSocket from '../../hooks/useWebSocket';
 import Timer from '../Timer/Timer';
@@ -15,9 +15,11 @@ const PollRoom = ({ roomCode, userName, onExit }) => {
     const [isVotingActive, setIsVotingActive] = useState(true);
     const [timerDuration, setTimerDuration] = useState(60);
     const [error, setError] = useState(null);
-    const [timerKey, setTimerKey] = useState(0); 
+    const [timerKey, setTimerKey] = useState(0);
 
     const { sendMessage, messages, isConnected } = useWebSocket();
+    const [userCount, setUserCount] = useState(1);
+    const [isJoining, setIsJoining] = useState(true);
     
     const timerIntervalRef = useRef(null);
 
@@ -44,21 +46,17 @@ const PollRoom = ({ roomCode, userName, onExit }) => {
         };
     }, [roomCode]);
 
-    const refreshTimer = () => {
+    const refreshTimer = useCallback(() => {
         if (timerIntervalRef.current) {
             clearInterval(timerIntervalRef.current);
         }
-        
         const serverStartTime = sessionStorage.getItem(`room_${roomCode}_serverStartTime`);
         const savedTimeLeft = sessionStorage.getItem(`room_${roomCode}_timeLeft`);
         const savedTimeStamp = sessionStorage.getItem(`room_${roomCode}_timeStamp`);
-        
         let initialTime = 60;
-        
         if (serverStartTime) {
             const totalElapsed = Math.floor((Date.now() - parseInt(serverStartTime)) / 1000);
             initialTime = Math.max(0, 60 - totalElapsed);
-            
             if (initialTime <= 0) {
                 setIsVotingActive(false);
                 return;
@@ -66,26 +64,20 @@ const PollRoom = ({ roomCode, userName, onExit }) => {
         } else if (savedTimeLeft && savedTimeStamp) {
             const elapsed = Math.floor((Date.now() - parseInt(savedTimeStamp)) / 1000);
             initialTime = Math.max(0, parseInt(savedTimeLeft) - elapsed);
-            
             if (initialTime <= 0) {
                 setIsVotingActive(false);
                 return;
             }
         }
-        
         setTimerDuration(initialTime);
         setTimerKey(prevKey => prevKey + 1);
-        
         if (initialTime > 0 && isVotingActive) {
             timerIntervalRef.current = setInterval(() => {
                 const serverStartTime = sessionStorage.getItem(`room_${roomCode}_serverStartTime`);
-                
                 if (serverStartTime) {
                     const totalElapsed = Math.floor((Date.now() - parseInt(serverStartTime)) / 1000);
                     const remaining = Math.max(0, 60 - totalElapsed);
-                    
                     setTimerDuration(remaining);
-                    
                     if (remaining <= 0) {
                         clearInterval(timerIntervalRef.current);
                         setIsVotingActive(false);
@@ -93,10 +85,11 @@ const PollRoom = ({ roomCode, userName, onExit }) => {
                 }
             }, 1000);
         }
-    };
+    }, [roomCode, isVotingActive]);
 
     useEffect(() => {
         if (isConnected && roomCode && userName) {
+            setIsJoining(true);
             sendMessage({
                 type: 'joinRoom',
                 roomCode,
@@ -107,90 +100,85 @@ const PollRoom = ({ roomCode, userName, onExit }) => {
 
     const handleVote = useCallback((option) => {
         if (hasVoted || !isVotingActive) return;
-
-        const updatedVotes = { ...votes };
-        updatedVotes[option] = (updatedVotes[option] || 0) + 1;
-
-        setVotes(updatedVotes);
-
+        setVotes(prevVotes => {
+            const updatedVotes = { ...prevVotes };
+            updatedVotes[option] = (updatedVotes[option] || 0) + 1;
+            return updatedVotes;
+        });
         setLocalHasVoted(true);
         setHasVoted(true);
         setSelectedOption(option);
-
         sessionStorage.setItem(`vote_${roomCode}_${userName}`, option);
-
         sendMessage({
             type: 'vote',
             option,
             userName,
             roomCode
         });
-    }, [hasVoted, isVotingActive, roomCode, userName, votes, sendMessage, setHasVoted]);
+    }, [hasVoted, isVotingActive, roomCode, userName, sendMessage, setHasVoted]);
 
     useEffect(() => {
         if (!messages || messages.length === 0) return;
-
         const lastMessage = messages[messages.length - 1];
         if (!lastMessage) return;
-
         switch (lastMessage.type) {
             case 'roomJoined':
+                setIsJoining(false);
                 if (lastMessage.room) {
                     setQuestion(lastMessage.room.question);
                     setOptions(lastMessage.room.options);
                     setVotes({ ...lastMessage.room.votes });
                     setIsVotingActive(lastMessage.room.isVotingActive);
-
+                    if (typeof lastMessage.room.userCount === 'number') {
+                        setUserCount(lastMessage.room.userCount);
+                    }
                     sessionStorage.setItem(`room_${roomCode}_state`, JSON.stringify({
                         question: lastMessage.room.question,
                         options: lastMessage.room.options,
                         isVotingActive: lastMessage.room.isVotingActive
                     }));
-
                     if (lastMessage.room.startTime) {
                         sessionStorage.setItem(`room_${roomCode}_serverStartTime`, lastMessage.room.startTime);
-                        
-                        // Refresh the timer whenever we get a server start time
                         refreshTimer();
                     }
-
                     if (typeof lastMessage.room.timeLeft === 'number') {
                         setTimerDuration(lastMessage.room.timeLeft);
-
                         sessionStorage.setItem(`room_${roomCode}_timeLeft`, lastMessage.room.timeLeft);
                         sessionStorage.setItem(`room_${roomCode}_timeStamp`, Date.now());
-                        
                         refreshTimer();
                     }
-                    
                     sessionStorage.setItem(`room_${roomCode}_votes`, JSON.stringify(lastMessage.room.votes));
                 }
                 break;
-
             case 'voteUpdate':
                 if (lastMessage.votes) {
                     setVotes({ ...lastMessage.votes });
-
                     sessionStorage.setItem(`room_${roomCode}_votes`, JSON.stringify(lastMessage.votes));
                 }
+                if (typeof lastMessage.userCount === 'number') {
+                    setUserCount(lastMessage.userCount);
+                }
                 break;
-
+            case 'userJoined':
+                setUserCount(count => count + 1);
+                break;
+            case 'userLeft':
+                setUserCount(count => Math.max(1, count - 1));
+                break;
             case 'votingEnded':
                 setIsVotingActive(false);
                 if (lastMessage.votes) {
                     setVotes({ ...lastMessage.votes });
                 }
                 break;
-
             case 'error':
+                setIsJoining(false);
                 console.error('Server error:', lastMessage.message);
                 setError(lastMessage.message);
-
                 if (lastMessage.availableRooms) {
                     sessionStorage.setItem('availableRooms', JSON.stringify(lastMessage.availableRooms));
                 }
                 break;
-
             case 'voteStatus':
                 if (lastMessage.userName === userName &&
                     lastMessage.roomCode === roomCode &&
@@ -199,7 +187,6 @@ const PollRoom = ({ roomCode, userName, onExit }) => {
                     setHasVoted(true);
                 }
                 break;
-
             default:
                 break;
         }
@@ -218,7 +205,8 @@ const PollRoom = ({ roomCode, userName, onExit }) => {
                 userName
             });
         }
-    }, [roomCode, userName, isConnected, sendMessage, setHasVoted]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [roomCode, userName, isConnected]);
 
     if (error) {
         const availableRoomsStr = sessionStorage.getItem('availableRooms');
@@ -259,11 +247,32 @@ const PollRoom = ({ roomCode, userName, onExit }) => {
         );
     }
 
+    // Memoize winner calculation
+    const winner = useMemo(() => {
+        if (options.length >= 2 && votes[options[0]] !== votes[options[1]]) {
+            return options.reduce((winner, option) =>
+                (votes[option] > votes[winner] ? option : winner),
+                options[0]
+            );
+        }
+        return null;
+    }, [options, votes]);
+
+    if (isJoining) {
+        return (
+            <div className="poll-room">
+                <div className="loading-spinner" style={{textAlign: 'center', marginTop: '2rem'}}>
+                    <div className="spinner" style={{margin: 'auto', width: 40, height: 40, border: '4px solid #ccc', borderTop: '4px solid #333', borderRadius: '50%', animation: 'spin 1s linear infinite'}}></div>
+                    <p>Joining room...</p>
+                </div>
+            </div>
+        );
+    }
     return (
         <div className="poll-room">
             <h2>Poll Room: {roomCode}</h2>
             <h3>Question: {question}</h3>
-
+            <div style={{marginBottom: '1rem', color: '#666'}}>Users in room: {userCount}</div>
             <div className="options-container">
                 {options.map((option) => (
                     <div key={option} className="poll-option">
@@ -278,34 +287,24 @@ const PollRoom = ({ roomCode, userName, onExit }) => {
                     </div>
                 ))}
             </div>
-
             {isVotingActive ? (
                 <Timer key={timerKey} duration={timerDuration} onEnd={() => setIsVotingActive(false)} />
             ) : (
                 <div className="voting-ended">
                     <p>Voting has ended</p>
-                    {options.length >= 2 && votes[options[0]] !== votes[options[1]] && (
-                        <p className="winner">
-                            Winner: {
-                                options.reduce((winner, option) =>
-                                    (votes[option] > votes[winner] ? option : winner),
-                                    options[0]
-                                )
-                            }
-                        </p>
+                    {winner && (
+                        <p className="winner">Winner: {winner}</p>
                     )}
                     {options.length >= 2 && votes[options[0]] === votes[options[1]] && votes[options[0]] > 0 && (
                         <p className="tie">It's a tie!</p>
                     )}
                 </div>
             )}
-
             {hasVoted && (
                 <div className="voted-message">
                     <p>You voted for: {selectedOption}</p>
                 </div>
             )}
-
             <div className="results-section">
                 <h3>Live Results</h3>
                 {options.length === 2 && (
@@ -315,7 +314,6 @@ const PollRoom = ({ roomCode, userName, onExit }) => {
                     />
                 )}
             </div>
-
             <div className="action-buttons">
                 <button onClick={onExit} className="button exit-button">
                     Leave Room
