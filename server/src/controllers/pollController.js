@@ -41,6 +41,7 @@ const getPollResults = (req, res) => {
     res.status(200).json({ votes: pollRoom.getVotes() });
 };
 
+// export all
 module.exports = {
     createPollRoom,
     joinPollRoom,
