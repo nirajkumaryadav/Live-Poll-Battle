@@ -1,6 +1,6 @@
 # Live Poll Battle
 
-## Live Demo
+## Live 
 **Check out the live application here: [https://live-poll-battle.onrender.com/](https://live-poll-battle.onrender.com/)**
 
 ## Overview
