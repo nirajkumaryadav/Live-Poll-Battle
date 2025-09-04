@@ -1,5 +1,5 @@
 {
-  "name": "live-poll-battle-server",
+  "name": "Live-Poll-Battle-Server",
   "version": "1.0.0",
   "description": "Backend server for the Live Poll Battle application using Node.js and WebSockets.",
   "main": "src/server.js",
