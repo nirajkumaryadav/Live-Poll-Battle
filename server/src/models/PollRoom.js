@@ -1,3 +1,4 @@
+// create pollRoom and features
 class PollRoom {
     constructor(roomCode, question, options) {
         this.roomCode = roomCode;
