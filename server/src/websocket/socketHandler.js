@@ -1,3 +1,4 @@
+// socket handler
 const WebSocket = require('ws');
 const PollRoom = require('../models/PollRoom');
 
